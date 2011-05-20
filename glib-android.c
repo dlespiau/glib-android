@@ -290,22 +290,18 @@ poll:
 }
 
 gboolean
-g_android_init (int                 *argc,
-                gchar             ***arvg,
-                GAndroidInitFlags    flags)
+g_android_init (void)
 {
-  if (flags & G_ANDROID_INIT_FLAG_LOG_HANDLER)
-    g_log_set_default_handler (g_android_log_handler, NULL);
+  GMainContext *context;
 
-  if (flags & G_ANDROID_INIT_FLAG_MAIN_LOOP)
-    {
-      GMainContext *context;
+  /* logs */
+  g_log_set_default_handler (g_android_log_handler, NULL);
 
-      remaining_timeout = g_timer_new ();
+  /* main loop */
+  remaining_timeout = g_timer_new ();
 
-      context = g_main_context_default ();
-      g_main_context_set_poll_func (context, g_android_poll);
-    }
+  context = g_main_context_default ();
+  g_main_context_set_poll_func (context, g_android_poll);
 
   return TRUE;
 }

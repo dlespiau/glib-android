@@ -218,7 +218,7 @@ android_main (struct android_app* state)
   // Make sure glue isn't stripped.
   app_dummy ();
 
-  g_android_init (NULL, NULL, G_ANDROID_INIT_FLAG_LOG_HANDLER);
+  g_android_init ();
 
   memset (&engine, 0, sizeof (engine));
   state->userData = &engine;
