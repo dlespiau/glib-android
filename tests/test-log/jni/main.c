@@ -68,7 +68,7 @@ static int engine_init_display (struct engine* engine)
     EGL_RED_SIZE, 8,
     EGL_NONE
   };
-  EGLint w, h, dummy, format;
+  EGLint w, h, format;
   EGLint numConfigs;
   EGLConfig config;
   EGLSurface surface;
