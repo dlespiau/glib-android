@@ -278,11 +278,14 @@ poll:
       if (source && source->process)
         source->process (source->app, source);
 
+      if (timeout_ < 0)
+        goto poll;
+
       /* compute the new timeout, note this is done after processing the
        * MAIN and INPUT source, so we effectively take into account the time
        * we just spent in those process() functions */
       elapsed = g_timer_elapsed (remaining_timeout, NULL);
-      elapsed_ms = elapsed_ms * 1000;
+      elapsed_ms = elapsed * 1000;
 
       timeout_ -= elapsed_ms;
       if (timeout_ < 0)
