@@ -1,4 +1,7 @@
 
+#include <errno.h>
+#include <string.h>
+
 #include <android/log.h>
 #include <android/looper.h>
 
@@ -249,12 +252,19 @@ poll:
   /* FIXME: let's assume that the underlying function behind ALooper_pollAll()
    * sets errno */
   if (res == ALOOPER_POLL_ERROR)
-    return -1;
+    {
+      G_ANDROID_NOTE ("pollAll() returned an error (%d:%s)", errno,
+                      strerror (errno));
+      return -1;
+    }
 
   /* A value of 0 indicates that the call timed out and no file descriptors
    * were ready */
   if (res == ALOOPER_POLL_TIMEOUT)
-    return 0;
+    {
+      G_ANDROID_NOTE ("pollAll() timed out (%dms)", timeout_);
+      return 0;
+    }
 
   G_ANDROID_NOTE ("Processing id %s", looper_id_to_string (res));
 
@@ -284,6 +294,7 @@ poll:
   /* We've been signaled a fd, let's update GPollFD.revents. res is the ident
    * we've given in addFd(), we can extract the index in fds from it */
   i = res - LOOPER_ID_USER;
+  G_ANDROID_NOTE ("Signalling fd %d", fds[i].fd);
   fds[i].revents = looper_event_to_g_io_condition (out_events);
 
   return 1;
