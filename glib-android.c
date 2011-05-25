@@ -9,7 +9,7 @@
 
 #include "glib-android.h"
 
-#define G_ANDROID_DEBUG 1
+#define G_ANDROID_DEBUG 0
 
 #if G_ANDROID_DEBUG
 
