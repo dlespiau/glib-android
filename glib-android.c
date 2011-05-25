@@ -39,7 +39,7 @@ looper_id_to_string (int id)
 }
 #else
 
-#define G_ANDROID_NOTE(fmt,args) G_STMT_END { } G_STMT_END
+#define G_ANDROID_NOTE(fmt,args...) G_STMT_END { } G_STMT_END
 
 #endif
 
