@@ -220,7 +220,7 @@ g_android_poll (GPollFD *fds,
         {
           GPollFD *fd = &g_array_index (previous_fds, GPollFD, i);
 
-          if (has_fd (fds, n_fds, fd->fd))
+          if (!has_fd (fds, n_fds, fd->fd))
             {
               G_ANDROID_NOTE ("Remove fd %d", fds[i].fd);
 
