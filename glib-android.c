@@ -188,6 +188,7 @@ save_poll_state (GPollFD *fds,
   if (G_UNLIKELY (previous_fds == NULL))
     previous_fds = g_array_sized_new (FALSE, FALSE, sizeof (GPollFD), n_fds);
 
+  g_array_set_size (previous_fds, 0);
   g_array_insert_vals (previous_fds, 0, fds, n_fds);
 }
 
