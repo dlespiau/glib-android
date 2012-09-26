@@ -357,6 +357,7 @@ poll:
   i = res - LOOPER_ID_USER;
   G_ANDROID_NOTE ("Signalling fd %d", fds[i].fd);
   fds[i].revents = looper_event_to_g_io_condition (out_events);
+  ALooper_removeFd (looper, fds[i].fd);
 
   return 1;
 }
