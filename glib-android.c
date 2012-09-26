@@ -179,14 +179,31 @@ looper_event_to_g_io_condition (int events)
  * track of which fd has been removed from the list to remove them from the
  * ALooper.
  */
-static GArray *previous_fds = NULL;
+static GPrivate tls_previous_fds = G_PRIVATE_INIT ((GDestroyNotify) g_array_unref);
+
+static GArray *
+_get_previous_fds (void)
+{
+  return g_private_get (&tls_previous_fds);
+}
+
+static void
+_set_previous_fds (GArray *array)
+{
+  g_private_replace (&tls_previous_fds, array);
+}
 
 static void
 save_poll_state (GPollFD *fds,
                  gint    n_fds)
 {
+  GArray *previous_fds = _get_previous_fds ();
+
   if (G_UNLIKELY (previous_fds == NULL))
-    previous_fds = g_array_sized_new (FALSE, FALSE, sizeof (GPollFD), n_fds);
+    {
+      previous_fds = g_array_sized_new (FALSE, FALSE, sizeof (GPollFD), n_fds);
+      _set_previous_fds (previous_fds);
+    }
 
   g_array_set_size (previous_fds, 0);
   g_array_insert_vals (previous_fds, 0, fds, n_fds);
@@ -227,6 +244,7 @@ g_android_poll (GPollFD *fds,
   gint res, out_fd, out_events;
   guint i;
   void *out_data;
+  GArray *previous_fds;
 
   looper = ALooper_forThread ();
   if (G_UNLIKELY (looper == NULL))
@@ -252,7 +270,9 @@ g_android_poll (GPollFD *fds,
 
   /* Remove the fds that were in the previous call but are not present any
    * longer */
-  if (G_LIKELY (previous_fds))
+  previous_fds = _get_previous_fds ();
+
+  if (G_LIKELY (previous_fds != NULL))
     {
       for (i = 0; i < previous_fds->len; i++)
         {
